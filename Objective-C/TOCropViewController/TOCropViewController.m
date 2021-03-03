@@ -80,7 +80,8 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
         // Init parameters
         _image = image;
         _croppingStyle = style;
-        
+
+        self.autoUnlockRatioLockEnabled = true;
         // Set up base view controller behaviour
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.modalPresentationStyle = UIModalPresentationFullScreen;
@@ -681,7 +682,13 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
         aspectRatio.height = width;
     }
     
-    [self.cropView setAspectRatio:aspectRatio animated:animated];
+    typeof(self) __weak weakSelf = self;
+    [self.cropView setAspectRatio:aspectRatio animated:animated completion:^(){
+        if(weakSelf.autoUnlockRatioLockEnabled == YES){
+            weakSelf.cropView.aspectRatioLockEnabled = NO;
+            weakSelf.toolbar.clampButtonGlowing = NO;
+        }
+    }];
 }
 
 - (void)rotateCropViewClockwise

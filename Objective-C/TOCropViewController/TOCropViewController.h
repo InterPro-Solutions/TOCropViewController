@@ -218,6 +218,13 @@
  */
 @property (nonatomic, assign) BOOL aspectRatioLockEnabled;
 
+/**
+ If false, while it can still be resized, the crop box will be locked to its current aspect ratio.
+
+ Default is true.
+ */
+@property (nonatomic, assign) BOOL autoUnlockRatioLockEnabled;
+
 /** 
  If true, tapping the reset button will also reset the aspect ratio back to the image
  default ratio. Otherwise, the reset will just zoom out to the current aspect ratio.

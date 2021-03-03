@@ -244,12 +244,20 @@ The minimum croping aspect ratio. If set, user is prevented from setting croppin
 
 /**
  Changes the aspect ratio of the crop box to match the one specified
- 
+
  @param aspectRatio The aspect ratio (For example 16:9 is 16.0f/9.0f). 'CGSizeZero' will reset it to the image's own ratio
  @param animated Whether the locking effect is animated
  */
 - (void)setAspectRatio:(CGSize)aspectRatio animated:(BOOL)animated;
 
+/**
+ Changes the aspect ratio of the crop box to match the one specified
+ 
+ @param aspectRatio The aspect ratio (For example 16:9 is 16.0f/9.0f). 'CGSizeZero' will reset it to the image's own ratio
+ @param animated Whether the locking effect is animated
+ @param completion 
+ */
+- (void)setAspectRatio:(CGSize)aspectRatio animated:(BOOL)animated completion:(void (^ __nullable)(void))completion;
 /**
  Rotates the entire canvas to a 90-degree angle. The default rotation is counterclockwise.
  
