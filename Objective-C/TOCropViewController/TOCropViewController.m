@@ -119,9 +119,40 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
     
     BOOL circularMode = (self.croppingStyle == TOCropViewCroppingStyleCircular);
 
+
+
     // Layout the views initially
-    self.cropView.frame = [self frameForCropViewWithVerticalLayout:self.verticalLayout];
-    self.toolbar.frame = [self frameForToolbarWithVerticalLayout:self.verticalLayout];
+    if (@available(iOS 11.0, *)) {
+        self.cropView.translatesAutoresizingMaskIntoConstraints = false;
+        self.toolbar.translatesAutoresizingMaskIntoConstraints = false;
+        [NSLayoutConstraint activateConstraints:@[
+            [self.cropView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+            [self.cropView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+            [self.toolbar.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+            [self.toolbar.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+            [self.toolbar.heightAnchor constraintEqualToConstant:kTOCropViewControllerToolbarHeight]
+        ]];
+        if (self.toolbarPosition == TOCropViewControllerToolbarPositionBottom){
+            [NSLayoutConstraint activateConstraints:@[
+                [self.cropView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+                [self.cropView.bottomAnchor constraintEqualToAnchor:self.toolbar.topAnchor],
+                [self.toolbar.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+            ]];
+        }
+        else {
+            [NSLayoutConstraint activateConstraints:@[
+                [self.cropView.topAnchor constraintEqualToAnchor:self.toolbar.bottomAnchor],
+                [self.cropView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+                [self.toolbar.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+            ]];
+        }
+    } else {
+        self.cropView.frame = [self frameForCropViewWithVerticalLayout:self.verticalLayout];
+        self.toolbar.frame = [self frameForToolbarWithVerticalLayout:self.verticalLayout];
+    }
+
+
+
 
     // Set up toolbar default behaviour
     self.toolbar.clampButtonHidden = self.aspectRatioPickerButtonHidden || circularMode;
@@ -438,7 +469,12 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
 {
     [super viewDidLayoutSubviews];
 
-    self.cropView.frame = [self frameForCropViewWithVerticalLayout:self.verticalLayout];
+    if (@available(iOS 11.0, *)){
+
+    }
+    else{
+        self.cropView.frame = [self frameForCropViewWithVerticalLayout:self.verticalLayout];
+    }
     [self adjustCropViewInsets];
     [self.cropView moveCroppedContentToCenterAnimated:NO];
 
@@ -453,7 +489,12 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
     }
 
     [UIView performWithoutAnimation:^{
-        self.toolbar.frame = [self frameForToolbarWithVerticalLayout:self.verticalLayout];
+        if (@available(iOS 11.0, *)){
+
+        }
+        else{
+            self.toolbar.frame = [self frameForToolbarWithVerticalLayout:self.verticalLayout];
+        }
         [self adjustToolbarInsets];
         [self.toolbar setNeedsLayout];
     }];
@@ -482,13 +523,18 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
     else {
         frame.origin.y = self.view.bounds.size.height;
     }
-    self.toolbar.frame = frame;
 
     [self.toolbar layoutIfNeeded];
     self.toolbar.alpha = 0.0f;
     
     [self.cropView prepareforRotation];
-    self.cropView.frame = [self frameForCropViewWithVerticalLayout:!UIInterfaceOrientationIsPortrait(toInterfaceOrientation)];
+    if (@available(iOS 11.0, *)){
+
+    }
+    else{
+        self.cropView.frame = [self frameForCropViewWithVerticalLayout:!UIInterfaceOrientationIsPortrait(toInterfaceOrientation)];
+        self.toolbar.frame = frame;
+    }
     self.cropView.simpleRenderMode = YES;
     self.cropView.internalLayoutDisabled = YES;
 }
@@ -496,7 +542,12 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
 - (void)_willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     //Remove all animations in the toolbar
-    self.toolbar.frame = [self frameForToolbarWithVerticalLayout:!UIInterfaceOrientationIsLandscape(toInterfaceOrientation)];
+    if (@available(iOS 11.0, *)){
+
+    }
+    else{
+        self.toolbar.frame = [self frameForToolbarWithVerticalLayout:!UIInterfaceOrientationIsLandscape(toInterfaceOrientation)];
+    }
     [self.toolbar.layer removeAllAnimations];
     for (CALayer *sublayer in self.toolbar.layer.sublayers) {
         [sublayer removeAllAnimations];
@@ -509,8 +560,14 @@ static const CGFloat kTOCropViewControllerToolbarHeight = 44.0f;
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:
     ^{
-        self.cropView.frame = [self frameForCropViewWithVerticalLayout:!UIInterfaceOrientationIsLandscape(toInterfaceOrientation)];
-        self.toolbar.frame = [self frameForToolbarWithVerticalLayout:UIInterfaceOrientationIsPortrait(toInterfaceOrientation)];
+        if (@available(iOS 11.0, *)){
+
+        }
+        else{
+            self.cropView.frame = [self frameForCropViewWithVerticalLayout:!UIInterfaceOrientationIsLandscape(toInterfaceOrientation)];
+            self.toolbar.frame = [self frameForToolbarWithVerticalLayout:UIInterfaceOrientationIsPortrait(toInterfaceOrientation)];
+        }
+
         [self.cropView performRelayoutForRotation];
     } completion:nil];
 
